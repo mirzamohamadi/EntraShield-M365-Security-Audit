@@ -1,0 +1,86 @@
+[
+  {
+    "userId": "u001",
+    "userPrincipalName": "sara@contoso-demo.com",
+    "methods": [
+      {
+        "type": "microsoftAuthenticator"
+      },
+      {
+        "type": "sms"
+      }
+    ]
+  },
+  {
+    "userId": "u002",
+    "userPrincipalName": "omid@contoso-demo.com",
+    "methods": [
+      {
+        "type": "fido2SecurityKey"
+      },
+      {
+        "type": "microsoftAuthenticator"
+      }
+    ]
+  },
+  {
+    "userId": "u003",
+    "userPrincipalName": "lena@contoso-demo.com",
+    "methods": [
+      {
+        "type": "sms"
+      }
+    ]
+  },
+  {
+    "userId": "u004",
+    "userPrincipalName": "david@contoso-demo.com",
+    "methods": [
+      {
+        "type": "microsoftAuthenticator"
+      }
+    ]
+  },
+  {
+    "userId": "u005",
+    "userPrincipalName": "breakglass01@contoso-demo.com",
+    "methods": []
+  },
+  {
+    "userId": "u006",
+    "userPrincipalName": "breakglass02@contoso-demo.com",
+    "methods": []
+  },
+  {
+    "userId": "u007",
+    "userPrincipalName": "marco@contoso-demo.com",
+    "methods": [
+      {
+        "type": "softwareOath"
+      }
+    ]
+  },
+  {
+    "userId": "u008",
+    "userPrincipalName": "nina@contoso-demo.com",
+    "methods": [
+      {
+        "type": "passkey"
+      }
+    ]
+  },
+  {
+    "userId": "u009",
+    "userPrincipalName": "nomfa@contoso-demo.com",
+    "methods": []
+  },
+  {
+    "userId": "u010",
+    "userPrincipalName": "oldadmin@contoso-demo.com",
+    "methods": [
+      {
+        "type": "sms"
+      }
+    ]
+  }
+]

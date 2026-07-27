@@ -1,0 +1,11 @@
+{
+  "displayName": "CA - Block legacy authentication",
+  "state": "enabled",
+  "conditions": {
+    "clientAppTypes": ["exchangeActiveSync", "other"]
+  },
+  "grantControls": {
+    "operator": "OR",
+    "builtInControls": ["block"]
+  }
+}

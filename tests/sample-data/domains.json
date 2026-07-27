@@ -1,0 +1,14 @@
+[
+  {
+    "domain": "contoso-demo.com",
+    "spfPresent": true,
+    "dkimEnabled": true,
+    "dmarcPolicy": "none"
+  },
+  {
+    "domain": "contoso-mail.com",
+    "spfPresent": false,
+    "dkimEnabled": false,
+    "dmarcPolicy": "missing"
+  }
+]

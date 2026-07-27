@@ -1,0 +1,8 @@
+{
+  "fido2Enabled": false,
+  "temporaryAccessPassEnabled": false,
+  "phishingResistantAuthenticationStrengthConfigured": false,
+  "registrationCampaignTarget": "Microsoft Authenticator only",
+  "smsEnabled": true,
+  "voiceEnabled": true
+}

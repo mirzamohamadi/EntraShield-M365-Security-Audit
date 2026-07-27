@@ -1,0 +1,52 @@
+[
+  {
+    "roleName": "Global Administrator",
+    "members": [
+      {
+        "userId": "u002",
+        "displayName": "Omid Rahimi",
+        "userPrincipalName": "omid@contoso-demo.com"
+      },
+      {
+        "userId": "u004",
+        "displayName": "David Chen",
+        "userPrincipalName": "david@contoso-demo.com"
+      },
+      {
+        "userId": "u005",
+        "displayName": "Break Glass 01",
+        "userPrincipalName": "breakglass01@contoso-demo.com"
+      },
+      {
+        "userId": "u006",
+        "displayName": "Break Glass 02",
+        "userPrincipalName": "breakglass02@contoso-demo.com"
+      },
+      {
+        "userId": "u010",
+        "displayName": "Old Service Admin",
+        "userPrincipalName": "oldadmin@contoso-demo.com"
+      }
+    ]
+  },
+  {
+    "roleName": "Security Administrator",
+    "members": [
+      {
+        "userId": "u008",
+        "displayName": "Nina Patel",
+        "userPrincipalName": "nina@contoso-demo.com"
+      }
+    ]
+  },
+  {
+    "roleName": "Exchange Administrator",
+    "members": [
+      {
+        "userId": "u004",
+        "displayName": "David Chen",
+        "userPrincipalName": "david@contoso-demo.com"
+      }
+    ]
+  }
+]

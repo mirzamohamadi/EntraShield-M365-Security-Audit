@@ -1,0 +1,23 @@
+[
+  {
+    "mailbox": "sara@contoso-demo.com",
+    "forwardingType": "External",
+    "target": "sara.private-mail.example",
+    "ruleName": "Forward all",
+    "ruleRisk": "High"
+  },
+  {
+    "mailbox": "finance@contoso-demo.com",
+    "forwardingType": "None",
+    "target": "",
+    "ruleName": "Move invoices",
+    "ruleRisk": "Low"
+  },
+  {
+    "mailbox": "ceo@contoso-demo.com",
+    "forwardingType": "External",
+    "target": "unknown.external.example",
+    "ruleName": "Mark bank emails as read",
+    "ruleRisk": "Critical"
+  }
+]

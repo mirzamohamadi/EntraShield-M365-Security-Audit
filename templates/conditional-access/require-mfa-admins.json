@@ -1,0 +1,13 @@
+{
+  "displayName": "CA - Require MFA for privileged roles",
+  "state": "enabled",
+  "conditions": {
+    "users": {
+      "includeRoles": ["Global Administrator", "Security Administrator", "Privileged Role Administrator"]
+    }
+  },
+  "grantControls": {
+    "operator": "OR",
+    "builtInControls": ["mfa"]
+  }
+}

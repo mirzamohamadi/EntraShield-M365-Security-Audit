@@ -1,0 +1,22 @@
+[
+  {
+    "displayName": "CA001 - Require MFA for admins",
+    "baselineKey": "requireMfaForAdmins",
+    "state": "enabled"
+  },
+  {
+    "displayName": "CA002 - Require MFA for all users",
+    "baselineKey": "requireMfaForAllUsers",
+    "state": "enabled"
+  },
+  {
+    "displayName": "CA003 - Block legacy authentication",
+    "baselineKey": "blockLegacyAuthentication",
+    "state": "disabled"
+  },
+  {
+    "displayName": "CA004 - Block high risk sign-ins",
+    "baselineKey": "blockHighRiskSignIns",
+    "state": "reportOnly"
+  }
+]

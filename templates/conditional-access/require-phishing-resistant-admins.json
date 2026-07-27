@@ -1,0 +1,13 @@
+{
+  "displayName": "CA - Require phishing-resistant MFA for admins",
+  "state": "enabled",
+  "conditions": {
+    "users": {
+      "includeRoles": ["Global Administrator", "Security Administrator", "Privileged Role Administrator"]
+    }
+  },
+  "grantControls": {
+    "operator": "OR",
+    "authenticationStrength": "Phishing-resistant MFA"
+  }
+}

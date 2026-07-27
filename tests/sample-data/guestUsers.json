@@ -1,0 +1,23 @@
+[
+  {
+    "id": "g001",
+    "displayName": "Vendor Admin",
+    "userPrincipalName": "vendor_admin#EXT#@contoso-demo.com",
+    "lastSignInDaysAgo": 12,
+    "owner": "Omid Rahimi"
+  },
+  {
+    "id": "g002",
+    "displayName": "Old Consultant",
+    "userPrincipalName": "old_consultant#EXT#@contoso-demo.com",
+    "lastSignInDaysAgo": 420,
+    "owner": ""
+  },
+  {
+    "id": "g003",
+    "displayName": "Partner User",
+    "userPrincipalName": "partner#EXT#@contoso-demo.com",
+    "lastSignInDaysAgo": 240,
+    "owner": "Sara Mitchell"
+  }
+]
