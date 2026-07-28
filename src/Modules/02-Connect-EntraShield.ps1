@@ -8,7 +8,8 @@ function Connect-EntraShield {
             'Policy.Read.All',
             'Domain.Read.All',
             'Reports.Read.All',
-            'AuditLog.Read.All'
+            'AuditLog.Read.All',
+            'UserAuthenticationMethod.Read.All'
         )
     )
 

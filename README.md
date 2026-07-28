@@ -6,8 +6,8 @@ EntraShield is an open-source Microsoft 365 and Microsoft Entra ID security audi
 
 The project is designed for Microsoft 365 administrators, cloud engineers, security analysts, and MSP teams who want a practical way to review common identity security weaknesses and produce a clean executive-style report.
 
-> Current status: **v0.1.0 MVP / demo-first release**  
-> The current version includes a working demo data model, scoring logic, report structure, and PowerShell module skeleton. Live Microsoft Graph collection is intentionally conservative and read-only.
+> Current status: **v0.2.0 MVP / Microsoft Graph live collector preview**  
+> The project supports demo mode and a read-only live mode for Microsoft Graph collection. Live collection currently covers users, authentication methods, directory roles, Conditional Access policies, domains, guest users, and authentication method policy posture.
 
 ---
 
@@ -89,11 +89,19 @@ reports/entra-shield-findings.json
 
 ---
 
-## Live Tenant Mode: Planned / Read-Only
+## Live Tenant Mode: Microsoft Graph Read-Only Preview
 
-Live tenant mode is designed to use Microsoft Graph and Exchange Online PowerShell in a read-only manner.
+Live tenant mode uses Microsoft Graph in a read-only manner. It currently collects:
 
-Recommended Microsoft Graph permissions for future live collection:
+- Users
+- Authentication methods
+- Directory roles and members
+- Conditional Access policies
+- Domains and basic DNS email security posture
+- Guest users
+- Authentication method policy posture
+
+Recommended Microsoft Graph delegated permissions:
 
 ```text
 User.Read.All
@@ -103,20 +111,36 @@ Policy.Read.All
 Domain.Read.All
 Reports.Read.All
 AuditLog.Read.All
+UserAuthenticationMethod.Read.All
 ```
 
-Example:
+Install dependencies:
 
 ```powershell
 Install-Module Microsoft.Graph -Scope CurrentUser
-Install-Module ExchangeOnlineManagement -Scope CurrentUser
-
-Import-Module ./src/EntraShield.psm1 -Force
-Connect-EntraShield
-Invoke-EntraShieldAudit -OutputPath ./reports
 ```
 
-> Note: v0.1.0 is demo-first. Live collection functions are intentionally minimal and should be expanded carefully with tenant-safe error handling.
+Run a live read-only audit:
+
+```powershell
+Import-Module ./src/EntraShield.psm1 -Force
+Connect-EntraShield
+Invoke-EntraShieldAudit -Live -OutputPath ./reports/live
+```
+
+If you do not have permission to read authentication methods yet, you can run a partial live audit:
+
+```powershell
+Invoke-EntraShieldAudit -Live -SkipAuthenticationMethods -OutputPath ./reports/live-partial
+```
+
+For detailed setup, see:
+
+```text
+docs/live-tenant-setup.md
+```
+
+> Note: Exchange Online live forwarding collection is planned for a later milestone. Current live mode keeps ExchangeForwarding empty unless sample/demo data is used.
 
 ---
 
@@ -207,11 +231,15 @@ No secrets, tokens, tenant IDs, or customer data should be committed to the repo
 
 ### v0.2.0
 
-- [ ] Microsoft Graph user collector
-- [ ] Authentication methods collector
-- [ ] Directory roles collector
-- [ ] Conditional Access collector
-- [ ] Improved error handling
+- [x] Microsoft Graph user collector
+- [x] Authentication methods collector
+- [x] Directory roles collector
+- [x] Conditional Access collector
+- [x] Domain collector with basic DNS checks
+- [x] Guest user collector
+- [x] Live vs demo mode separation
+- [x] Live tenant setup documentation
+- [ ] Expanded test coverage with Pester
 
 ### v0.3.0
 

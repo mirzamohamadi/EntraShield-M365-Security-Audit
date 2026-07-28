@@ -19,5 +19,14 @@ Export-ModuleMember -Function @(
     'Test-EntraShieldExchangeSecurity',
     'Test-EntraShieldGuestUsers',
     'Test-EntraShieldDomainEmailSecurity',
-    'New-EntraShieldReport'
+    'New-EntraShieldReport',
+    'Invoke-EntraShieldGraphRequest',
+    'Get-EntraShieldLiveData',
+    'Get-EntraShieldUsers',
+    'Get-EntraShieldAuthenticationMethods',
+    'Get-EntraShieldPrivilegedRoles',
+    'Get-EntraShieldConditionalAccessPolicies',
+    'Get-EntraShieldDomains',
+    'Get-EntraShieldGuestUsers',
+    'Get-EntraShieldAuthenticationPolicy'
 )

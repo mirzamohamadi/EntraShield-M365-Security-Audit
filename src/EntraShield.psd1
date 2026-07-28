@@ -1,6 +1,6 @@
 @{
     RootModule = 'EntraShield.psm1'
-    ModuleVersion = '0.1.0'
+    ModuleVersion = '0.2.0'
     GUID = 'b0b4a0f7-1d1d-4b29-96c0-000000000001'
     Author = 'EntraShield Contributors'
     CompanyName = 'Community'

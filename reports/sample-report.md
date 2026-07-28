@@ -1,11 +1,15 @@
 # EntraShield Security Audit Report
 
 **Tenant:** Contoso Demo Tenant  
+**Prepared by:** EntraShield  
+**Assessment mode:** Demo Sample Data  
 **Generated:** 2026-07-27  
 **Overall Score:** 49/100  
 **Rating:** High Risk
 
 ## Executive Summary
+
+This sample report demonstrates how EntraShield presents identity security findings for a Microsoft 365 / Microsoft Entra ID environment. It is based on demo data only and does not contain real tenant information.
 
 | Severity | Count |
 |---|---:|

@@ -4,7 +4,9 @@ function New-EntraShieldReport {
         [Parameter(Mandatory)]$Findings,
         [Parameter(Mandatory)]$Metrics,
         [string]$OutputPath = './reports',
-        [string]$TenantName = 'Demo Tenant'
+        [string]$TenantName = 'Demo Tenant',
+        [string]$PreparedBy = 'EntraShield',
+        [string]$AssessmentMode = 'Demo Sample Data'
     )
 
     if (-not (Test-Path $OutputPath)) {
@@ -28,6 +30,8 @@ function New-EntraShieldReport {
 
     $summary = [pscustomobject]@{
         TenantName = $TenantName
+        PreparedBy = $PreparedBy
+        AssessmentMode = $AssessmentMode
         GeneratedAt = $generatedAt
         Score = $score
         Rating = $rating
@@ -47,6 +51,8 @@ function New-EntraShieldReport {
     [void]$md.AppendLine('# EntraShield Security Audit Report')
     [void]$md.AppendLine('')
     [void]$md.AppendLine("**Tenant:** $TenantName  ")
+    [void]$md.AppendLine("**Prepared by:** $PreparedBy  ")
+    [void]$md.AppendLine("**Assessment mode:** $AssessmentMode  ")
     [void]$md.AppendLine("**Generated:** $generatedAt  ")
     [void]$md.AppendLine("**Overall Score:** $score/100  ")
     [void]$md.AppendLine("**Rating:** $rating")
@@ -95,7 +101,7 @@ body{font-family:Segoe UI,Arial,sans-serif;background:#f6f8fb;color:#172033;marg
 <body><div class="wrap">
 <section class="hero">
 <h1>EntraShield Security Audit Report</h1>
-<p>Tenant: <strong>$TenantName</strong> · Generated: <strong>$generatedAt</strong></p>
+<p>Tenant: <strong>$TenantName</strong> · Mode: <strong>$AssessmentMode</strong> · Prepared by: <strong>$PreparedBy</strong> · Generated: <strong>$generatedAt</strong></p>
 <div class="score">$score/100</div>
 <span class="rating">$rating</span>
 </section>
