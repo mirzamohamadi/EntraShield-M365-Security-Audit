@@ -3,6 +3,9 @@ function Get-EntraShieldLiveData {
     param(
         [switch]$SkipAuthenticationMethods,
         [switch]$SkipDnsChecks,
+        [switch]$IncludeExchangeOnline,
+        [switch]$SkipInboxRules,
+        [int]$MailboxLimit = 0,
         [switch]$ContinueOnCollectorError
     )
 
@@ -61,13 +64,31 @@ function Get-EntraShieldLiveData {
     $guestUsers = Get-EntraShieldGuestUsers -Users $users
     $authenticationPolicy = Get-EntraShieldAuthenticationPolicy -ConditionalAccessPolicies $conditionalAccess
 
+    $exchangeForwarding = @()
+    if ($IncludeExchangeOnline) {
+        try {
+            $acceptedDomains = @($domains | ForEach-Object { $_.domain } | Where-Object { $_ -and ($_ -notmatch '\.onmicrosoft\.com$') })
+            $exchangeForwarding = Get-EntraShieldExchangeForwarding -AcceptedDomains $acceptedDomains -SkipInboxRules:$SkipInboxRules -MailboxLimit $MailboxLimit -ContinueOnError:$ContinueOnCollectorError
+        }
+        catch {
+            $message = "Exchange Online collection failed. Run Connect-EntraShieldExchange first or use live mode without -IncludeExchangeOnline. Error: $($_.Exception.Message)"
+            if ($ContinueOnCollectorError) {
+                Write-Warning $message
+                $exchangeForwarding = @()
+            }
+            else {
+                throw $message
+            }
+        }
+    }
+
     [pscustomobject]@{
         TenantMetadata        = $tenantMetadata
         Users                 = $users
         AuthenticationMethods = $authenticationMethods
         PrivilegedRoles       = $privilegedRoles
         ConditionalAccess     = $conditionalAccess
-        ExchangeForwarding    = @()
+        ExchangeForwarding    = $exchangeForwarding
         GuestUsers            = $guestUsers
         Domains               = $domains
         AuthenticationPolicy  = $authenticationPolicy

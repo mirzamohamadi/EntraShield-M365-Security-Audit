@@ -76,7 +76,7 @@ Install Microsoft Graph PowerShell SDK:
 Install-Module Microsoft.Graph -Scope CurrentUser
 ```
 
-Optional future dependency for Exchange Online live collection:
+Optional dependency for Exchange Online live collection:
 
 ```powershell
 Install-Module ExchangeOnlineManagement -Scope CurrentUser
@@ -145,7 +145,41 @@ reports/live/entra-shield-findings.json
 
 ---
 
-## 8. Run a Partial Audit Without Authentication Methods
+## 8. Run a Live Audit With Exchange Online
+
+Exchange Online collection is optional. First connect to Exchange Online:
+
+```powershell
+Connect-EntraShieldExchange
+```
+
+Then run:
+
+```powershell
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -OutputPath ./reports/live-exchange
+```
+
+For a small first test:
+
+```powershell
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -MailboxLimit 5 -OutputPath ./reports/live-exchange-test
+```
+
+To skip inbox rules and check only mailbox-level forwarding:
+
+```powershell
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -SkipInboxRules -OutputPath ./reports/live-forwarding-only
+```
+
+For details, see:
+
+```text
+docs/exchange-online-setup.md
+```
+
+---
+
+## 9. Run a Partial Audit Without Authentication Methods
 
 If you cannot grant `UserAuthenticationMethod.Read.All` yet:
 
@@ -157,7 +191,7 @@ This will still collect users, roles, Conditional Access policies, domains, and 
 
 ---
 
-## 9. DNS Checks
+## 10. DNS Checks
 
 Domain checks attempt to detect:
 
@@ -173,7 +207,7 @@ Invoke-EntraShieldAudit -Live -SkipDnsChecks -OutputPath ./reports/live-no-dns
 
 ---
 
-## 10. Before / After Portfolio Scenario
+## 11. Before / After Portfolio Scenario
 
 For a strong portfolio story:
 
@@ -199,7 +233,7 @@ After:  86/100 - Strong
 
 ---
 
-## 11. Safety Notes
+## 12. Safety Notes
 
 - Run only in a lab or tenant where you have permission.
 - The current live collectors are read-only.
@@ -209,7 +243,7 @@ After:  86/100 - Strong
 
 ---
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 ### Error: Microsoft Graph PowerShell SDK is not installed
 

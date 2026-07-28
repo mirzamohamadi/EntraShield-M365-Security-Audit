@@ -5,6 +5,9 @@ function Invoke-EntraShieldAudit {
         [switch]$Live,
         [switch]$SkipAuthenticationMethods,
         [switch]$SkipDnsChecks,
+        [switch]$IncludeExchangeOnline,
+        [switch]$SkipInboxRules,
+        [int]$MailboxLimit = 0,
         [switch]$ContinueOnCollectorError,
         [string]$SampleDataPath = (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'tests/sample-data'),
         [string]$OutputPath = './reports',
@@ -22,7 +25,7 @@ function Invoke-EntraShieldAudit {
     }
 
     if ($Live) {
-        $data = Get-EntraShieldLiveData -SkipAuthenticationMethods:$SkipAuthenticationMethods -SkipDnsChecks:$SkipDnsChecks -ContinueOnCollectorError:$ContinueOnCollectorError
+        $data = Get-EntraShieldLiveData -SkipAuthenticationMethods:$SkipAuthenticationMethods -SkipDnsChecks:$SkipDnsChecks -IncludeExchangeOnline:$IncludeExchangeOnline -SkipInboxRules:$SkipInboxRules -MailboxLimit $MailboxLimit -ContinueOnCollectorError:$ContinueOnCollectorError
         if (-not $TenantName -and $data.TenantMetadata.displayName) { $TenantName = $data.TenantMetadata.displayName }
         if (-not $TenantName) { $TenantName = 'Live Tenant' }
         $assessmentMode = 'Live Microsoft Graph Read-Only'

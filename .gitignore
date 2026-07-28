@@ -1,0 +1,24 @@
+# PowerShell
+*.ps1xml
+*.pssc
+*.psrc
+
+# Reports generated from real tenants
+reports/entra-shield-report.html
+reports/entra-shield-report.md
+reports/entra-shield-findings.json
+exports/
+*.token
+*.secret
+.env
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Generated local test reports
+reports/demo/
+reports/live/
+reports/live-*/
+reports/generated/

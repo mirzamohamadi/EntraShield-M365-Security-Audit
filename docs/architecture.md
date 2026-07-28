@@ -16,7 +16,7 @@ Sample JSON Data -> Analyzer Modules -> Finding Objects -> Report Generator -> H
 ## Planned Live Flow
 
 ```text
-Microsoft Graph / Exchange Online / DNS -> Collectors -> Analyzer Modules -> Report Generator
+Microsoft Graph / Exchange Online PowerShell / DNS -> Collectors -> Analyzer Modules -> Report Generator
 ```
 
 ## Safety Model
