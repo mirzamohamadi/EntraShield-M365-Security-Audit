@@ -6,8 +6,8 @@ EntraShield is an open-source Microsoft 365 and Microsoft Entra ID security audi
 
 The project is designed for Microsoft 365 administrators, cloud engineers, security analysts, and MSP teams who want a practical way to review common identity security weaknesses and produce a clean executive-style report.
 
-> Current status: **v0.2.0 MVP / Microsoft Graph live collector preview**  
-> The project supports demo mode and a read-only live mode for Microsoft Graph collection. Live collection currently covers users, authentication methods, directory roles, Conditional Access policies, domains, guest users, and authentication method policy posture.
+> Current status: **v0.3.0 MVP / Microsoft Graph + Exchange Online live collector preview**  
+> The project supports demo mode and read-only live collection for Microsoft Graph and optional Exchange Online mailbox forwarding / inbox rule inspection.
 
 ---
 
@@ -91,7 +91,7 @@ reports/entra-shield-findings.json
 
 ## Live Tenant Mode: Microsoft Graph Read-Only Preview
 
-Live tenant mode uses Microsoft Graph in a read-only manner. It currently collects:
+Live tenant mode uses Microsoft Graph and, optionally, Exchange Online PowerShell in a read-only manner. It currently collects:
 
 - Users
 - Authentication methods
@@ -100,6 +100,7 @@ Live tenant mode uses Microsoft Graph in a read-only manner. It currently collec
 - Domains and basic DNS email security posture
 - Guest users
 - Authentication method policy posture
+- Optional Exchange Online mailbox forwarding and suspicious inbox rules
 
 Recommended Microsoft Graph delegated permissions:
 
@@ -118,9 +119,10 @@ Install dependencies:
 
 ```powershell
 Install-Module Microsoft.Graph -Scope CurrentUser
+Install-Module ExchangeOnlineManagement -Scope CurrentUser
 ```
 
-Run a live read-only audit:
+Run a live Microsoft Graph read-only audit:
 
 ```powershell
 Import-Module ./src/EntraShield.psm1 -Force
@@ -134,13 +136,34 @@ If you do not have permission to read authentication methods yet, you can run a 
 Invoke-EntraShieldAudit -Live -SkipAuthenticationMethods -OutputPath ./reports/live-partial
 ```
 
+Run a live audit including Exchange Online forwarding and inbox rule checks:
+
+```powershell
+Connect-EntraShield
+Connect-EntraShieldExchange
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -OutputPath ./reports/live-exchange
+```
+
+For a small lab test, limit mailbox inspection:
+
+```powershell
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -MailboxLimit 5 -OutputPath ./reports/live-exchange-test
+```
+
+If you want mailbox-level forwarding only and want to skip inbox rule inspection:
+
+```powershell
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -SkipInboxRules -OutputPath ./reports/live-exchange-forwarding-only
+```
+
 For detailed setup, see:
 
 ```text
 docs/live-tenant-setup.md
+docs/exchange-online-setup.md
 ```
 
-> Note: Exchange Online live forwarding collection is planned for a later milestone. Current live mode keeps ExchangeForwarding empty unless sample/demo data is used.
+> Note: Exchange Online collection is optional. Run `Connect-EntraShieldExchange` first and use `-IncludeExchangeOnline`. Do not run against production mailboxes unless you have explicit permission.
 
 ---
 
@@ -243,10 +266,13 @@ No secrets, tokens, tenant IDs, or customer data should be committed to the repo
 
 ### v0.3.0
 
-- [ ] Exchange Online live collector
-- [ ] SPF/DKIM/DMARC DNS resolver
-- [ ] FIDO2/passkey readiness expansion
+- [x] Exchange Online live collector
+- [x] Mailbox-level forwarding detection
+- [x] Inbox rule forwarding detection
+- [x] Suspicious inbox rule heuristics
+- [x] Exchange Online setup documentation
 - [ ] Pester tests
+- [ ] Advanced Conditional Access parsing
 
 ### v1.0.0
 

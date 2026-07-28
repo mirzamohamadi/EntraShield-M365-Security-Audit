@@ -28,5 +28,9 @@ Export-ModuleMember -Function @(
     'Get-EntraShieldConditionalAccessPolicies',
     'Get-EntraShieldDomains',
     'Get-EntraShieldGuestUsers',
-    'Get-EntraShieldAuthenticationPolicy'
+    'Get-EntraShieldAuthenticationPolicy',
+    'Connect-EntraShieldExchange',
+    'Get-EntraShieldExchangeForwarding',
+    'Convert-EntraShieldRecipientToSmtpAddress',
+    'Test-EntraShieldExternalSmtpAddress'
 )
