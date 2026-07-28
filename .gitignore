@@ -16,3 +16,9 @@ exports/
 .DS_Store
 .vscode/
 .idea/
+
+# Generated local test reports
+reports/demo/
+reports/live/
+reports/live-*/
+reports/generated/

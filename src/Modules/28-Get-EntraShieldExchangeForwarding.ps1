@@ -139,7 +139,7 @@ function Get-EntraShieldExchangeForwarding {
     foreach ($mailbox in $mailboxes) {
         $index++
         $mailboxId = if ($mailbox.UserPrincipalName) { $mailbox.UserPrincipalName } else { [string]$mailbox.PrimarySmtpAddress }
-        Write-Progress -Activity 'Collecting Exchange Online forwarding' -Status "$index of $total: $mailboxId" -PercentComplete (($index / [math]::Max($total,1)) * 100)
+        Write-Progress -Activity 'Collecting Exchange Online forwarding' -Status "$($index) of $($total): $mailboxId" -PercentComplete (($index / [math]::Max($total,1)) * 100)
 
         try {
             $forwardingTargets = @()

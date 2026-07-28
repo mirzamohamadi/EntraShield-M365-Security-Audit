@@ -35,7 +35,7 @@ function Get-EntraShieldAuthenticationMethods {
 
     foreach ($user in @($Users)) {
         $index++
-        Write-Progress -Activity 'Collecting authentication methods' -Status "$index of $total: $($user.userPrincipalName)" -PercentComplete (($index / [math]::Max($total,1)) * 100)
+        Write-Progress -Activity 'Collecting authentication methods' -Status "$($index) of $($total): $($user.userPrincipalName)" -PercentComplete (($index / [math]::Max($total,1)) * 100)
 
         try {
             $escapedUserId = [uri]::EscapeDataString($user.id)
