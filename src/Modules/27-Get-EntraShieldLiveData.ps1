@@ -6,6 +6,7 @@ function Get-EntraShieldLiveData {
         [switch]$IncludeExchangeOnline,
         [switch]$SkipInboxRules,
         [int]$MailboxLimit = 0,
+        [switch]$NoProgress,
         [switch]$ContinueOnCollectorError
     )
 
@@ -19,6 +20,48 @@ function Get-EntraShieldLiveData {
     }
 
     Write-Host 'Collecting live Microsoft Entra / Microsoft 365 data in read-only mode...' -ForegroundColor Cyan
+
+    # ArrayList is used for Windows PowerShell 5.1 compatibility.
+    $collectorStatus = New-Object System.Collections.ArrayList
+
+    function Add-CollectorStatus {
+        param(
+            [string]$Name,
+            [string]$Status,
+            [string]$Details = ''
+        )
+
+        [void]$collectorStatus.Add([pscustomobject]@{
+            Name = $Name
+            Status = $Status
+            Details = $Details
+        })
+    }
+
+    function Invoke-EntraShieldLiveCollector {
+        param(
+            [Parameter(Mandatory)][string]$Name,
+            [Parameter(Mandatory)][scriptblock]$ScriptBlock,
+            [Parameter()]$Fallback = @()
+        )
+
+        try {
+            $result = & $ScriptBlock
+            Add-CollectorStatus -Name $Name -Status 'Success' -Details 'Collected successfully.'
+            return $result
+        }
+        catch {
+            $message = $_.Exception.Message
+            Add-CollectorStatus -Name $Name -Status 'Failed' -Details $message
+
+            if ($ContinueOnCollectorError) {
+                Write-Warning "Collector failed [$Name]: $message"
+                return $Fallback
+            }
+
+            throw "Collector failed [$Name]: $message"
+        }
+    }
 
     $tenantMetadata = [pscustomobject]@{
         displayName   = 'Unknown Tenant'
@@ -36,16 +79,21 @@ function Get-EntraShieldLiveData {
                 tenantId      = $orgFirst.id
                 defaultDomain = $defaultDomain
             }
+            Add-CollectorStatus -Name 'Tenant metadata' -Status 'Success' -Details 'Collected organization metadata.'
         }
     }
     catch {
+        Add-CollectorStatus -Name 'Tenant metadata' -Status 'Warning' -Details $_.Exception.Message
         Write-Warning "Could not collect organization metadata: $($_.Exception.Message)"
     }
 
-    $users = Get-EntraShieldUsers
+    $users = Invoke-EntraShieldLiveCollector -Name 'Users' -Fallback @() -ScriptBlock {
+        Get-EntraShieldUsers
+    }
 
     if ($SkipAuthenticationMethods) {
         Write-Warning 'Skipping authentication methods collection. MFA and FIDO2 findings will be incomplete.'
+        Add-CollectorStatus -Name 'Authentication methods' -Status 'Skipped' -Details 'Skipped by -SkipAuthenticationMethods.'
         $authenticationMethods = @($users | ForEach-Object {
             [pscustomobject]@{
                 userId            = $_.id
@@ -55,31 +103,47 @@ function Get-EntraShieldLiveData {
         })
     }
     else {
-        $authenticationMethods = Get-EntraShieldAuthenticationMethods -Users $users -ContinueOnError:$ContinueOnCollectorError
+        $authenticationMethods = Invoke-EntraShieldLiveCollector -Name 'Authentication methods' -Fallback @() -ScriptBlock {
+            Get-EntraShieldAuthenticationMethods -Users $users -ContinueOnError:$ContinueOnCollectorError -NoProgress:$NoProgress
+        }
     }
 
-    $privilegedRoles = Get-EntraShieldPrivilegedRoles
-    $conditionalAccess = Get-EntraShieldConditionalAccessPolicies
-    $domains = Get-EntraShieldDomains -SkipDnsChecks:$SkipDnsChecks
-    $guestUsers = Get-EntraShieldGuestUsers -Users $users
-    $authenticationPolicy = Get-EntraShieldAuthenticationPolicy -ConditionalAccessPolicies $conditionalAccess
+    $privilegedRoles = Invoke-EntraShieldLiveCollector -Name 'Directory roles' -Fallback @() -ScriptBlock {
+        Get-EntraShieldPrivilegedRoles
+    }
+
+    $conditionalAccess = Invoke-EntraShieldLiveCollector -Name 'Conditional Access policies' -Fallback @() -ScriptBlock {
+        Get-EntraShieldConditionalAccessPolicies
+    }
+
+    $domains = Invoke-EntraShieldLiveCollector -Name 'Domains' -Fallback @() -ScriptBlock {
+        Get-EntraShieldDomains -SkipDnsChecks:$SkipDnsChecks
+    }
+
+    $guestUsers = Invoke-EntraShieldLiveCollector -Name 'Guest users' -Fallback @() -ScriptBlock {
+        Get-EntraShieldGuestUsers -Users $users
+    }
+
+    $authenticationPolicy = Invoke-EntraShieldLiveCollector -Name 'Authentication policy' -Fallback ([pscustomobject]@{
+        fido2Enabled = $false
+        temporaryAccessPassEnabled = $false
+        phishingResistantAuthenticationStrengthConfigured = $false
+        registrationCampaignTarget = 'Unknown'
+        smsEnabled = $false
+        voiceEnabled = $false
+    }) -ScriptBlock {
+        Get-EntraShieldAuthenticationPolicy -ConditionalAccessPolicies $conditionalAccess
+    }
 
     $exchangeForwarding = @()
     if ($IncludeExchangeOnline) {
-        try {
+        $exchangeForwarding = Invoke-EntraShieldLiveCollector -Name 'Exchange Online forwarding' -Fallback @() -ScriptBlock {
             $acceptedDomains = @($domains | ForEach-Object { $_.domain } | Where-Object { $_ -and ($_ -notmatch '\.onmicrosoft\.com$') })
-            $exchangeForwarding = Get-EntraShieldExchangeForwarding -AcceptedDomains $acceptedDomains -SkipInboxRules:$SkipInboxRules -MailboxLimit $MailboxLimit -ContinueOnError:$ContinueOnCollectorError
+            Get-EntraShieldExchangeForwarding -AcceptedDomains $acceptedDomains -SkipInboxRules:$SkipInboxRules -MailboxLimit $MailboxLimit -ContinueOnError:$ContinueOnCollectorError -NoProgress:$NoProgress
         }
-        catch {
-            $message = "Exchange Online collection failed. Run Connect-EntraShieldExchange first or use live mode without -IncludeExchangeOnline. Error: $($_.Exception.Message)"
-            if ($ContinueOnCollectorError) {
-                Write-Warning $message
-                $exchangeForwarding = @()
-            }
-            else {
-                throw $message
-            }
-        }
+    }
+    else {
+        Add-CollectorStatus -Name 'Exchange Online forwarding' -Status 'Skipped' -Details 'Skipped because -IncludeExchangeOnline was not specified.'
     }
 
     [pscustomobject]@{
@@ -92,5 +156,6 @@ function Get-EntraShieldLiveData {
         GuestUsers            = $guestUsers
         Domains               = $domains
         AuthenticationPolicy  = $authenticationPolicy
+        CollectorStatus       = @($collectorStatus.ToArray())
     }
 }

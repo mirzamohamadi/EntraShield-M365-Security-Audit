@@ -20,6 +20,10 @@ function New-EntraShieldReport {
     $medium = @($findingsArray | Where-Object Severity -eq 'Medium').Count
     $low = @($findingsArray | Where-Object Severity -eq 'Low').Count
     $informational = @($findingsArray | Where-Object Severity -eq 'Informational').Count
+    $collectorStatus = @()
+    if ($Metrics -and ($Metrics.PSObject.Properties.Name -contains 'CollectorStatus')) {
+        $collectorStatus = @($Metrics.CollectorStatus)
+    }
 
     $scoreModel = New-EntraShieldScore -Findings $findingsArray
     $score = $scoreModel.OverallScore
@@ -39,6 +43,7 @@ function New-EntraShieldReport {
         Informational = $informational
         TotalFindings = $findingsArray.Count
         CategoryScores = $scoreModel.CategoryScores
+        CollectorStatus = $collectorStatus
         Metrics = $Metrics
     }
 
@@ -74,6 +79,17 @@ function New-EntraShieldReport {
         [void]$md.AppendLine("| $($c.Category) | $($c.Score) | $($c.Weight) | $($c.Findings) | $($c.Critical) | $($c.High) | $($c.Medium) | $($c.Low) |")
     }
     [void]$md.AppendLine('')
+    if ($collectorStatus.Count -gt 0) {
+        [void]$md.AppendLine('## Collector Status')
+        [void]$md.AppendLine('')
+        [void]$md.AppendLine('| Collector | Status | Details |')
+        [void]$md.AppendLine('|---|---|---|')
+        foreach ($collector in $collectorStatus) {
+            [void]$md.AppendLine("| $($collector.Name) | $($collector.Status) | $($collector.Details) |")
+        }
+        [void]$md.AppendLine('')
+    }
+
     [void]$md.AppendLine('## Top Recommendations')
     [void]$md.AppendLine('')
     $topFindings = @($findingsArray | Sort-Object @{Expression={ switch ($_.Severity) { 'Critical' { 1 } 'High' { 2 } 'Medium' { 3 } 'Low' { 4 } default { 5 } } }}, Category, Id | Select-Object -First 10)
@@ -114,6 +130,23 @@ function New-EntraShieldReport {
         "<li><span class='sev $sevClass'>$($_.Severity)</span> <strong>$(ConvertTo-EntraShieldHtmlText $_.Title)</strong><br><span>$(ConvertTo-EntraShieldHtmlText $_.Recommendation)</span></li>"
     }) -join "`n"
 
+    $collectorStatusPanel = ''
+    if ($collectorStatus.Count -gt 0) {
+        $collectorRows = ($collectorStatus | ForEach-Object {
+            $statusClass = ([string]$_.Status).ToLowerInvariant()
+            "<tr><td>$(ConvertTo-EntraShieldHtmlText $_.Name)</td><td><span class='status $statusClass'>$(ConvertTo-EntraShieldHtmlText $_.Status)</span></td><td>$(ConvertTo-EntraShieldHtmlText $_.Details)</td></tr>"
+        }) -join "`n"
+
+        $collectorStatusPanel = @"
+<section class="panel">
+<h2>Collector Status</h2>
+<table><thead><tr><th>Collector</th><th>Status</th><th>Details</th></tr></thead><tbody>
+$collectorRows
+</tbody></table>
+</section>
+"@
+    }
+
     $findingRows = ($findingsArray | Sort-Object @{Expression={ switch ($_.Severity) { 'Critical' { 1 } 'High' { 2 } 'Medium' { 3 } 'Low' { 4 } default { 5 } } }}, Category, Id | ForEach-Object {
         $sevClass = $_.Severity.ToLowerInvariant()
         "<tr><td><code>$(ConvertTo-EntraShieldHtmlText $_.Id)</code></td><td><span class='sev $sevClass'>$($_.Severity)</span></td><td>$(ConvertTo-EntraShieldHtmlText $_.Category)</td><td>$(ConvertTo-EntraShieldHtmlText $_.Title)</td><td>$(ConvertTo-EntraShieldHtmlText $_.Evidence)</td><td>$(ConvertTo-EntraShieldHtmlText $_.Recommendation)</td></tr>"
@@ -127,7 +160,7 @@ function New-EntraShieldReport {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EntraShield Security Audit Report</title>
 <style>
-:root{--bg:#f6f8fb;--ink:#172033;--muted:#64748b;--blue:#2554d9;--card:#fff;--line:#e5eaf3}*{box-sizing:border-box}body{font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:0}.wrap{max-width:1280px;margin:0 auto;padding:32px}.hero{background:linear-gradient(135deg,#172033,#2554d9);color:#fff;border-radius:22px;padding:30px;margin-bottom:22px;box-shadow:0 14px 36px rgba(20,30,55,.18)}.hero h1{margin:0 0 8px;font-size:34px}.hero p{color:#dbeafe}.score{font-size:60px;font-weight:850;letter-spacing:-1px}.rating{display:inline-block;background:#eef3ff;color:#1d4ed8;padding:8px 12px;border-radius:999px;font-weight:800}.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:20px 0}.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(20,30,55,.08)}.card .n{font-size:32px;font-weight:800}.muted{color:var(--muted)}.panel{background:#fff;border-radius:18px;padding:20px;margin:18px 0;box-shadow:0 8px 24px rgba(20,30,55,.08)}table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(20,30,55,.08)}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}th{background:#f0f4ff}.sev{padding:5px 9px;border-radius:999px;font-weight:800;font-size:12px;white-space:nowrap}.critical{background:#fee2e2;color:#991b1b}.high{background:#ffedd5;color:#9a3412}.medium{background:#fef9c3;color:#854d0e}.low{background:#dcfce7;color:#166534}.informational{background:#e0f2fe;color:#075985}.bar{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;min-width:120px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px}.recommendations{margin:0;padding-left:20px}.recommendations li{margin:12px 0;line-height:1.45}.footer{color:#69758a;font-size:13px;margin-top:22px}@media(max-width:980px){.cards{grid-template-columns:1fr 1fr}.score{font-size:44px}.wrap{padding:18px}table{font-size:12px}}
+:root{--bg:#f6f8fb;--ink:#172033;--muted:#64748b;--blue:#2554d9;--card:#fff;--line:#e5eaf3}*{box-sizing:border-box}body{font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:0}.wrap{max-width:1280px;margin:0 auto;padding:32px}.hero{background:linear-gradient(135deg,#172033,#2554d9);color:#fff;border-radius:22px;padding:30px;margin-bottom:22px;box-shadow:0 14px 36px rgba(20,30,55,.18)}.hero h1{margin:0 0 8px;font-size:34px}.hero p{color:#dbeafe}.score{font-size:60px;font-weight:850;letter-spacing:-1px}.rating{display:inline-block;background:#eef3ff;color:#1d4ed8;padding:8px 12px;border-radius:999px;font-weight:800}.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:20px 0}.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(20,30,55,.08)}.card .n{font-size:32px;font-weight:800}.muted{color:var(--muted)}.panel{background:#fff;border-radius:18px;padding:20px;margin:18px 0;box-shadow:0 8px 24px rgba(20,30,55,.08)}table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(20,30,55,.08)}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}th{background:#f0f4ff}.sev{padding:5px 9px;border-radius:999px;font-weight:800;font-size:12px;white-space:nowrap}.critical{background:#fee2e2;color:#991b1b}.high{background:#ffedd5;color:#9a3412}.medium{background:#fef9c3;color:#854d0e}.low{background:#dcfce7;color:#166534}.informational{background:#e0f2fe;color:#075985}.status{padding:5px 9px;border-radius:999px;font-weight:800;font-size:12px}.success{background:#dcfce7;color:#166534}.failed{background:#fee2e2;color:#991b1b}.warning{background:#fef9c3;color:#854d0e}.skipped{background:#e0f2fe;color:#075985}.bar{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;min-width:120px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#2563eb);border-radius:999px}.recommendations{margin:0;padding-left:20px}.recommendations li{margin:12px 0;line-height:1.45}.footer{color:#69758a;font-size:13px;margin-top:22px}@media(max-width:980px){.cards{grid-template-columns:1fr 1fr}.score{font-size:44px}.wrap{padding:18px}table{font-size:12px}}
 </style>
 </head>
 <body><div class="wrap">
@@ -150,6 +183,7 @@ function New-EntraShieldReport {
 $categoryRows
 </tbody></table>
 </section>
+$collectorStatusPanel
 <section class="panel">
 <h2>Top Recommendations</h2>
 <ol class="recommendations">
