@@ -6,7 +6,8 @@ function New-EntraShieldReport {
         [string]$OutputPath = './reports',
         [string]$TenantName = 'Demo Tenant',
         [string]$PreparedBy = 'EntraShield',
-        [string]$AssessmentMode = 'Demo Sample Data'
+        [string]$AssessmentMode = 'Demo Sample Data',
+        [switch]$Sanitize
     )
 
     if (-not (Test-Path $OutputPath)) {
@@ -14,7 +15,8 @@ function New-EntraShieldReport {
     }
 
     $generatedAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-    $findingsArray = @($Findings)
+    $reportTenantName = if ($Sanitize) { 'Sanitized Tenant' } else { $TenantName }
+    $findingsArray = if ($Sanitize) { @($Findings | ForEach-Object { ConvertTo-EntraShieldSanitizedFinding $_ }) } else { @($Findings) }
     $critical = @($findingsArray | Where-Object Severity -eq 'Critical').Count
     $high = @($findingsArray | Where-Object Severity -eq 'High').Count
     $medium = @($findingsArray | Where-Object Severity -eq 'Medium').Count
@@ -22,7 +24,13 @@ function New-EntraShieldReport {
     $informational = @($findingsArray | Where-Object Severity -eq 'Informational').Count
     $collectorStatus = @()
     if ($Metrics -and ($Metrics.PSObject.Properties.Name -contains 'CollectorStatus')) {
-        $collectorStatus = @($Metrics.CollectorStatus)
+        $collectorStatus = @($Metrics.CollectorStatus | ForEach-Object {
+            [pscustomobject]@{
+                Name = $_.Name
+                Status = $_.Status
+                Details = if ($Sanitize) { ConvertTo-EntraShieldSanitizedText $_.Details } else { $_.Details }
+            }
+        })
     }
 
     $scoreModel = New-EntraShieldScore -Findings $findingsArray
@@ -30,7 +38,7 @@ function New-EntraShieldReport {
     $rating = $scoreModel.Rating
 
     $summary = [pscustomobject]@{
-        TenantName = $TenantName
+        TenantName = $reportTenantName
         PreparedBy = $PreparedBy
         AssessmentMode = $AssessmentMode
         GeneratedAt = $generatedAt
@@ -45,6 +53,7 @@ function New-EntraShieldReport {
         CategoryScores = $scoreModel.CategoryScores
         CollectorStatus = $collectorStatus
         Metrics = $Metrics
+        Sanitized = [bool]$Sanitize
     }
 
     $mdPath = Join-Path $OutputPath 'entra-shield-report.md'
@@ -54,7 +63,7 @@ function New-EntraShieldReport {
     $md = New-Object System.Text.StringBuilder
     [void]$md.AppendLine('# EntraShield Security Audit Report')
     [void]$md.AppendLine('')
-    [void]$md.AppendLine("**Tenant:** $TenantName  ")
+    [void]$md.AppendLine("**Tenant:** $reportTenantName  ")
     [void]$md.AppendLine("**Prepared by:** $PreparedBy  ")
     [void]$md.AppendLine("**Assessment mode:** $AssessmentMode  ")
     [void]$md.AppendLine("**Generated:** $generatedAt  ")
@@ -166,7 +175,7 @@ $collectorRows
 <body><div class="wrap">
 <section class="hero">
 <h1>EntraShield Security Audit Report</h1>
-<p>Tenant: <strong>$(ConvertTo-EntraShieldHtmlText $TenantName)</strong> · Mode: <strong>$(ConvertTo-EntraShieldHtmlText $AssessmentMode)</strong> · Prepared by: <strong>$(ConvertTo-EntraShieldHtmlText $PreparedBy)</strong> · Generated: <strong>$generatedAt</strong></p>
+<p>Tenant: <strong>$(ConvertTo-EntraShieldHtmlText $reportTenantName)</strong> · Mode: <strong>$(ConvertTo-EntraShieldHtmlText $AssessmentMode)</strong> · Prepared by: <strong>$(ConvertTo-EntraShieldHtmlText $PreparedBy)</strong> · Generated: <strong>$generatedAt</strong></p>
 <div class="score">$score/100</div>
 <span class="rating">$rating</span>
 </section>

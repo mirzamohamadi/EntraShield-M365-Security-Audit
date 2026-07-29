@@ -44,6 +44,7 @@ v0.2.0 = Microsoft Graph live collector
 v0.3.0 = Exchange Online live collector
 v0.4.0 = quality, testing, and reporting improvements
 v0.5.0 = safer live mode and UX improvements
+v0.8.0 = remediation, sanitized export, and GitHub Pages demo
 v1.0.0 = first stable public release
 ```
 

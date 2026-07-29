@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.8.0 - Remediation, sanitized export, and GitHub Pages demo
+
+### Added
+- Remediation plan generator via `New-EntraShieldRemediationPlan`
+- `Invoke-EntraShieldAudit -GenerateRemediationPlan`
+- `remediation-plan.md` output
+- `remediation-plan.json` output
+- Sanitized export support via `-Sanitize`
+- Sanitization helpers for emails, UPNs, GUIDs, IP addresses, domains, and tenant names
+- GitHub Pages-ready demo assets under `docs/`
+- `docs/remediation.md`
+- `docs/sanitized-export.md`
+- `docs/github-pages.md`
+- `docs/before-after-workflow.md`
+- `examples` updated to support shareable workflows
+
+### Changed
+- Report generation can now produce sanitized outputs
+- Report JSON includes sanitized state when requested
+- `Invoke-EntraShieldAudit` can now return remediation plan output paths
+- README updated for v0.8.0 release candidate workflow
+- Module version updated to 0.8.0
+
+### Notes
+- This release prepares the project for safe portfolio demonstration by supporting sanitized reports and remediation planning.
+- GitHub Pages demo content uses sanitized demo data only.
+
 ## 0.5.0 - Safer live mode and UX improvements
 
 ### Added
