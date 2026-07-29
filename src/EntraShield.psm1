@@ -22,6 +22,7 @@ Export-ModuleMember -Function @(
     'New-EntraShieldReport',
     'New-EntraShieldScore',
     'New-EntraShieldRemediationPlan',
+    'Get-EntraShieldVersion',
     'ConvertTo-EntraShieldSanitizedText',
     'ConvertTo-EntraShieldSanitizedFinding',
     'Test-EntraShieldEnvironment',

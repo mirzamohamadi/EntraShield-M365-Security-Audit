@@ -12,6 +12,7 @@ Describe 'EntraShield module import' {
     It 'Exports core commands' {
         Get-Command Invoke-EntraShieldAudit -ErrorAction Stop | Should -Not -BeNullOrEmpty
         Get-Command Import-EntraShieldSampleData -ErrorAction Stop | Should -Not -BeNullOrEmpty
+        Get-Command Get-EntraShieldVersion -ErrorAction Stop | Should -Not -BeNullOrEmpty
         Get-Command New-EntraShieldScore -ErrorAction Stop | Should -Not -BeNullOrEmpty
         Get-Command New-EntraShieldRemediationPlan -ErrorAction Stop | Should -Not -BeNullOrEmpty
         Get-Command ConvertTo-EntraShieldSanitizedText -ErrorAction Stop | Should -Not -BeNullOrEmpty

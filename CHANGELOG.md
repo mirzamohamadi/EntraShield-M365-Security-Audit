@@ -1,5 +1,42 @@
 # Changelog
 
+## 1.0.0 - First stable public release
+
+### Added
+- Stable v1.0.0 release metadata
+- `Get-EntraShieldVersion` command
+- Installation guide
+- Command reference
+- v1.0.0 testing checklist
+- Finalized README structure for public release
+- GitHub Pages demo entry point retained under `docs/`
+- Complete documentation index for installation, testing, live setup, remediation, sanitized export, and release process
+
+### Changed
+- Module version updated to 1.0.0
+- README updated for stable public release
+- Tests updated to validate version command
+- Documentation improved for first-time users
+
+### Release scope
+- Demo mode
+- Microsoft Graph live mode
+- Optional Exchange Online live mode
+- Category-based scoring
+- Collector status tracking
+- HTML, Markdown, and JSON reports
+- Remediation plan generation
+- Sanitized export
+- GitHub Pages demo assets
+- Pester test scaffolding
+- GitHub Actions workflow
+- Security policy and GitHub templates
+
+### Notes
+- Live mode remains read-only.
+- Sanitized reports should still be manually reviewed before public sharing.
+- EntraShield is an audit helper, not a compliance certification platform.
+
 ## 0.8.0 - Remediation, sanitized export, and GitHub Pages demo
 
 ### Added
