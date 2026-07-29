@@ -6,8 +6,8 @@ EntraShield is an open-source Microsoft 365 and Microsoft Entra ID security audi
 
 The project is designed for Microsoft 365 administrators, cloud engineers, security analysts, and MSP teams who want a practical way to review common identity security weaknesses and produce a clean executive-style report.
 
-> Current status: **v0.3.0 MVP / Microsoft Graph + Exchange Online live collector preview**  
-> The project supports demo mode and read-only live collection for Microsoft Graph and optional Exchange Online mailbox forwarding / inbox rule inspection.
+> Current status: **v0.4.0 MVP / quality, testing, and reporting improvements**  
+> The project supports demo mode, read-only live collection for Microsoft Graph, optional Exchange Online mailbox forwarding / inbox rule inspection, category-based scoring, environment checks, and Pester-based test scaffolding.
 
 ---
 
@@ -74,9 +74,29 @@ Open the full sample output:
 
 Demo mode does not require a Microsoft tenant. It uses sample JSON data stored in `tests/sample-data`.
 
+If PowerShell blocks local scripts, run this for the current session:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+Import the module and run a demo audit:
+
 ```powershell
 Import-Module ./src/EntraShield.psm1 -Force
 Invoke-EntraShieldAudit -DemoMode -OutputPath ./reports
+```
+
+Run a local health check:
+
+```powershell
+Test-EntraShieldEnvironment | Format-Table -AutoSize
+```
+
+Or run the helper script:
+
+```powershell
+./tools/Test-EntraShieldLocal.ps1
 ```
 
 This generates:
@@ -204,6 +224,34 @@ Domain Email Security:  10 points
 
 ---
 
+## Testing
+
+Run Pester tests locally:
+
+```powershell
+Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck
+Invoke-Pester -Path ./tests
+```
+
+More details:
+
+```text
+docs/testing.md
+```
+
+---
+
+## Documentation
+
+- Live tenant setup: `docs/live-tenant-setup.md`
+- Exchange Online setup: `docs/exchange-online-setup.md`
+- Scoring model: `docs/scoring-model.md`
+- Testing: `docs/testing.md`
+- Release process: `docs/release-process.md`
+- Threat model: `docs/threat-model.md`
+
+---
+
 ## Suggested Deployment Roadmap
 
 1. Start with demo mode and review the sample report.
@@ -274,6 +322,16 @@ No secrets, tokens, tenant IDs, or customer data should be committed to the repo
 - [ ] Pester tests
 - [ ] Advanced Conditional Access parsing
 
+### v0.4.0
+
+- [x] Category-based scoring model
+- [x] Improved MSP-style HTML and Markdown reporting
+- [x] Environment check command
+- [x] Local test helper script
+- [x] Pester test scaffolding
+- [x] GitHub Actions test workflow
+- [x] Testing and release process documentation
+
 ### v1.0.0
 
 - [ ] Production-ready read-only audit
@@ -281,6 +339,7 @@ No secrets, tokens, tenant IDs, or customer data should be committed to the repo
 - [ ] GitHub Pages demo
 - [ ] Installation script
 - [ ] Full documentation
+- [ ] Stable live tenant test results
 
 ---
 
