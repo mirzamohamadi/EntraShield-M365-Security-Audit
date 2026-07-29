@@ -6,8 +6,8 @@ EntraShield is an open-source Microsoft 365 and Microsoft Entra ID security audi
 
 The project is designed for Microsoft 365 administrators, cloud engineers, security analysts, and MSP teams who want a practical way to review common identity security weaknesses and produce a clean executive-style report.
 
-> Current status: **v0.4.0 MVP / quality, testing, and reporting improvements**  
-> The project supports demo mode, read-only live collection for Microsoft Graph, optional Exchange Online mailbox forwarding / inbox rule inspection, category-based scoring, environment checks, and Pester-based test scaffolding.
+> Current status: **v0.5.0 MVP / safer live mode and UX improvements**  
+> The project supports demo mode, read-only live collection for Microsoft Graph, optional Exchange Online mailbox forwarding / inbox rule inspection, category-based scoring, collector status tracking, environment checks, example scripts, and Pester-based test scaffolding.
 
 ---
 
@@ -147,7 +147,7 @@ Run a live Microsoft Graph read-only audit:
 ```powershell
 Import-Module ./src/EntraShield.psm1 -Force
 Connect-EntraShield
-Invoke-EntraShieldAudit -Live -OutputPath ./reports/live
+Invoke-EntraShieldAudit -Live -ContinueOnCollectorError -NoProgress -OutputPath ./reports/live
 ```
 
 If you do not have permission to read authentication methods yet, you can run a partial live audit:
@@ -161,13 +161,13 @@ Run a live audit including Exchange Online forwarding and inbox rule checks:
 ```powershell
 Connect-EntraShield
 Connect-EntraShieldExchange
-Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -OutputPath ./reports/live-exchange
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -ContinueOnCollectorError -NoProgress -OutputPath ./reports/live-exchange
 ```
 
 For a small lab test, limit mailbox inspection:
 
 ```powershell
-Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -MailboxLimit 5 -OutputPath ./reports/live-exchange-test
+Invoke-EntraShieldAudit -Live -IncludeExchangeOnline -MailboxLimit 5 -ContinueOnCollectorError -NoProgress -OutputPath ./reports/live-exchange-test
 ```
 
 If you want mailbox-level forwarding only and want to skip inbox rule inspection:
@@ -247,8 +247,10 @@ docs/testing.md
 - Exchange Online setup: `docs/exchange-online-setup.md`
 - Scoring model: `docs/scoring-model.md`
 - Testing: `docs/testing.md`
+- Known limitations: `docs/known-limitations.md`
 - Release process: `docs/release-process.md`
 - Threat model: `docs/threat-model.md`
+- Examples: `examples/README.md`
 
 ---
 
@@ -331,6 +333,17 @@ No secrets, tokens, tenant IDs, or customer data should be committed to the repo
 - [x] Pester test scaffolding
 - [x] GitHub Actions test workflow
 - [x] Testing and release process documentation
+
+### v0.5.0
+
+- [x] Safer live mode with collector status tracking
+- [x] `-NoProgress` option
+- [x] `-OpenReport` option
+- [x] Prerequisite installer helper
+- [x] Example scripts
+- [x] Known limitations document
+- [x] Security policy
+- [x] Pull request and issue templates
 
 ### v1.0.0
 

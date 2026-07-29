@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.5.0 - Safer live mode and UX improvements
+
+### Added
+- Collector status tracking for live mode
+- Collector status section in Markdown and HTML reports
+- `-NoProgress` option for quieter live runs
+- `-OpenReport` option to open generated HTML report automatically
+- Safer `-ContinueOnCollectorError` behavior across live collectors
+- `tools/Install-EntraShieldPrerequisites.ps1`
+- Example scripts in `examples/`
+- `docs/known-limitations.md`
+- `SECURITY.md`
+- Pull request template
+- Bug report and feature request issue templates
+
+### Changed
+- Live mode now records successful, skipped, warning, and failed collector states
+- Exchange Online collection now supports `-NoProgress`
+- Authentication methods collection now supports `-NoProgress`
+- README updated with safer live mode examples and documentation links
+- Module version updated to 0.5.0
+
+### Notes
+- This release improves operator experience and makes partial live audits safer for lab and early testing scenarios.
+
 ## 0.4.0 - Quality, testing, and reporting improvements
 
 ### Added

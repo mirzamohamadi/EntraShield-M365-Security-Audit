@@ -24,7 +24,8 @@ function Get-EntraShieldAuthenticationMethods {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]$Users,
-        [switch]$ContinueOnError
+        [switch]$ContinueOnError,
+        [switch]$NoProgress
     )
 
     Write-Verbose 'Collecting user authentication methods from Microsoft Graph...'
@@ -35,7 +36,9 @@ function Get-EntraShieldAuthenticationMethods {
 
     foreach ($user in @($Users)) {
         $index++
-        Write-Progress -Activity 'Collecting authentication methods' -Status "$($index) of $($total): $($user.userPrincipalName)" -PercentComplete (($index / [math]::Max($total,1)) * 100)
+        if (-not $NoProgress) {
+            Write-Progress -Activity 'Collecting authentication methods' -Status "$($index) of $($total): $($user.userPrincipalName)" -PercentComplete (($index / [math]::Max($total,1)) * 100)
+        }
 
         try {
             $escapedUserId = [uri]::EscapeDataString($user.id)
@@ -73,6 +76,8 @@ function Get-EntraShieldAuthenticationMethods {
         }
     }
 
-    Write-Progress -Activity 'Collecting authentication methods' -Completed
+    if (-not $NoProgress) {
+        Write-Progress -Activity 'Collecting authentication methods' -Completed
+    }
     return @($results)
 }

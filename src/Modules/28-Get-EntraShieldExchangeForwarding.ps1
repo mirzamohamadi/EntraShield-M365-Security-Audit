@@ -102,7 +102,8 @@ function Get-EntraShieldExchangeForwarding {
         [string[]]$AcceptedDomains = @(),
         [int]$MailboxLimit = 0,
         [switch]$SkipInboxRules,
-        [switch]$ContinueOnError
+        [switch]$ContinueOnError,
+        [switch]$NoProgress
     )
 
     if (-not (Get-Command Get-EXOMailbox -ErrorAction SilentlyContinue)) {
@@ -139,7 +140,9 @@ function Get-EntraShieldExchangeForwarding {
     foreach ($mailbox in $mailboxes) {
         $index++
         $mailboxId = if ($mailbox.UserPrincipalName) { $mailbox.UserPrincipalName } else { [string]$mailbox.PrimarySmtpAddress }
-        Write-Progress -Activity 'Collecting Exchange Online forwarding' -Status "$($index) of $($total): $mailboxId" -PercentComplete (($index / [math]::Max($total,1)) * 100)
+        if (-not $NoProgress) {
+            Write-Progress -Activity 'Collecting Exchange Online forwarding' -Status "$($index) of $($total): $mailboxId" -PercentComplete (($index / [math]::Max($total,1)) * 100)
+        }
 
         try {
             $forwardingTargets = @()
@@ -228,6 +231,8 @@ function Get-EntraShieldExchangeForwarding {
         }
     }
 
-    Write-Progress -Activity 'Collecting Exchange Online forwarding' -Completed
+    if (-not $NoProgress) {
+        Write-Progress -Activity 'Collecting Exchange Online forwarding' -Completed
+    }
     return @($results)
 }

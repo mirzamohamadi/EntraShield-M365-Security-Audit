@@ -8,6 +8,8 @@ function Invoke-EntraShieldAudit {
         [switch]$IncludeExchangeOnline,
         [switch]$SkipInboxRules,
         [int]$MailboxLimit = 0,
+        [switch]$NoProgress,
+        [switch]$OpenReport,
         [switch]$ContinueOnCollectorError,
         [string]$SampleDataPath = (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'tests/sample-data'),
         [string]$OutputPath = './reports',
@@ -25,7 +27,7 @@ function Invoke-EntraShieldAudit {
     }
 
     if ($Live) {
-        $data = Get-EntraShieldLiveData -SkipAuthenticationMethods:$SkipAuthenticationMethods -SkipDnsChecks:$SkipDnsChecks -IncludeExchangeOnline:$IncludeExchangeOnline -SkipInboxRules:$SkipInboxRules -MailboxLimit $MailboxLimit -ContinueOnCollectorError:$ContinueOnCollectorError
+        $data = Get-EntraShieldLiveData -SkipAuthenticationMethods:$SkipAuthenticationMethods -SkipDnsChecks:$SkipDnsChecks -IncludeExchangeOnline:$IncludeExchangeOnline -SkipInboxRules:$SkipInboxRules -MailboxLimit $MailboxLimit -NoProgress:$NoProgress -ContinueOnCollectorError:$ContinueOnCollectorError
         if (-not $TenantName -and $data.TenantMetadata.displayName) { $TenantName = $data.TenantMetadata.displayName }
         if (-not $TenantName) { $TenantName = 'Live Tenant' }
         $assessmentMode = 'Live Microsoft Graph Read-Only'
@@ -55,5 +57,20 @@ function Invoke-EntraShieldAudit {
         }
     }
 
-    New-EntraShieldReport -Findings $allFindings -Metrics ([pscustomobject]$metrics) -OutputPath $OutputPath -TenantName $TenantName -PreparedBy $PreparedBy -AssessmentMode $assessmentMode
+    if ($data.PSObject.Properties.Name -contains 'CollectorStatus') {
+        $metrics['CollectorStatus'] = @($data.CollectorStatus)
+    }
+
+    $report = New-EntraShieldReport -Findings $allFindings -Metrics ([pscustomobject]$metrics) -OutputPath $OutputPath -TenantName $TenantName -PreparedBy $PreparedBy -AssessmentMode $assessmentMode
+
+    if ($OpenReport -and $report.Html -and (Test-Path $report.Html)) {
+        try {
+            Start-Process $report.Html
+        }
+        catch {
+            Write-Warning "Report generated, but could not open automatically: $($report.Html)"
+        }
+    }
+
+    return $report
 }
