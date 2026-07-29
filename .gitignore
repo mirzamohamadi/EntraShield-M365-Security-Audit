@@ -23,3 +23,6 @@ reports/live/
 reports/live-*/
 reports/generated/
 reports/generated-*/
+reports/sanitized*/
+reports/before/
+reports/after/

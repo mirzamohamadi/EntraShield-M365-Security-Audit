@@ -13,6 +13,8 @@ Describe 'EntraShield module import' {
         Get-Command Invoke-EntraShieldAudit -ErrorAction Stop | Should -Not -BeNullOrEmpty
         Get-Command Import-EntraShieldSampleData -ErrorAction Stop | Should -Not -BeNullOrEmpty
         Get-Command New-EntraShieldScore -ErrorAction Stop | Should -Not -BeNullOrEmpty
+        Get-Command New-EntraShieldRemediationPlan -ErrorAction Stop | Should -Not -BeNullOrEmpty
+        Get-Command ConvertTo-EntraShieldSanitizedText -ErrorAction Stop | Should -Not -BeNullOrEmpty
         Get-Command Test-EntraShieldEnvironment -ErrorAction Stop | Should -Not -BeNullOrEmpty
     }
 }
@@ -31,13 +33,26 @@ Describe 'Demo audit' {
         $out = Join-Path $script:ProjectRoot 'reports/generated-test'
         if (Test-Path $out) { Remove-Item $out -Recurse -Force }
 
-        $result = Invoke-EntraShieldAudit -DemoMode -OutputPath $out
+        $result = Invoke-EntraShieldAudit -DemoMode -GenerateRemediationPlan -OutputPath $out
 
         Test-Path $result.Markdown | Should -BeTrue
         Test-Path $result.Html | Should -BeTrue
         Test-Path $result.Json | Should -BeTrue
+        Test-Path $result.RemediationMarkdown | Should -BeTrue
+        Test-Path $result.RemediationJson | Should -BeTrue
         $result.Score | Should -BeGreaterOrEqual 0
         $result.Score | Should -BeLessOrEqual 100
+    }
+}
+
+Describe 'Sanitized export' {
+    It 'Masks common sensitive values' {
+        $text = 'admin@contoso.com signed in from 10.10.10.5 with object 11111111-2222-3333-4444-555555555555'
+        $sanitized = ConvertTo-EntraShieldSanitizedText $text
+        $sanitized | Should -Not -Match 'admin@contoso.com'
+        $sanitized | Should -Not -Match '10.10.10.5'
+        $sanitized | Should -Not -Match '11111111-2222-3333-4444-555555555555'
+        $sanitized | Should -Match 'user@example.com'
     }
 }
 

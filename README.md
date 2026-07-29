@@ -6,8 +6,8 @@ EntraShield is an open-source Microsoft 365 and Microsoft Entra ID security audi
 
 The project is designed for Microsoft 365 administrators, cloud engineers, security analysts, and MSP teams who want a practical way to review common identity security weaknesses and produce a clean executive-style report.
 
-> Current status: **v0.5.0 MVP / safer live mode and UX improvements**  
-> The project supports demo mode, read-only live collection for Microsoft Graph, optional Exchange Online mailbox forwarding / inbox rule inspection, category-based scoring, collector status tracking, environment checks, example scripts, and Pester-based test scaffolding.
+> Current status: **v0.8.0 release candidate / remediation, sanitized export, and demo site**  
+> The project supports demo mode, read-only live collection for Microsoft Graph, optional Exchange Online mailbox forwarding / inbox rule inspection, category-based scoring, collector status tracking, remediation plan generation, sanitized export, GitHub Pages demo assets, environment checks, example scripts, and Pester-based test scaffolding.
 
 ---
 
@@ -97,6 +97,12 @@ Or run the helper script:
 
 ```powershell
 ./tools/Test-EntraShieldLocal.ps1
+```
+
+Generate a sanitized demo report and remediation plan:
+
+```powershell
+Invoke-EntraShieldAudit -DemoMode -Sanitize -GenerateRemediationPlan -OutputPath ./reports/sanitized-demo -OpenReport
 ```
 
 This generates:
@@ -247,6 +253,10 @@ docs/testing.md
 - Exchange Online setup: `docs/exchange-online-setup.md`
 - Scoring model: `docs/scoring-model.md`
 - Testing: `docs/testing.md`
+- Remediation plan: `docs/remediation.md`
+- Sanitized export: `docs/sanitized-export.md`
+- GitHub Pages demo: `docs/github-pages.md`
+- Before / after workflow: `docs/before-after-workflow.md`
 - Known limitations: `docs/known-limitations.md`
 - Release process: `docs/release-process.md`
 - Threat model: `docs/threat-model.md`
@@ -344,6 +354,17 @@ No secrets, tokens, tenant IDs, or customer data should be committed to the repo
 - [x] Known limitations document
 - [x] Security policy
 - [x] Pull request and issue templates
+
+### v0.8.0
+
+- [x] Remediation plan generator
+- [x] `remediation-plan.md` and `remediation-plan.json`
+- [x] `-GenerateRemediationPlan` option
+- [x] `-Sanitize` option
+- [x] Sanitized HTML, Markdown, JSON, and remediation outputs
+- [x] GitHub Pages demo assets under `/docs`
+- [x] Before / after workflow documentation
+- [x] Remediation and sanitized export documentation
 
 ### v1.0.0
 

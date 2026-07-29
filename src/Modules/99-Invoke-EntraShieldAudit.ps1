@@ -10,6 +10,8 @@ function Invoke-EntraShieldAudit {
         [int]$MailboxLimit = 0,
         [switch]$NoProgress,
         [switch]$OpenReport,
+        [switch]$Sanitize,
+        [switch]$GenerateRemediationPlan,
         [switch]$ContinueOnCollectorError,
         [string]$SampleDataPath = (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'tests/sample-data'),
         [string]$OutputPath = './reports',
@@ -61,7 +63,13 @@ function Invoke-EntraShieldAudit {
         $metrics['CollectorStatus'] = @($data.CollectorStatus)
     }
 
-    $report = New-EntraShieldReport -Findings $allFindings -Metrics ([pscustomobject]$metrics) -OutputPath $OutputPath -TenantName $TenantName -PreparedBy $PreparedBy -AssessmentMode $assessmentMode
+    $report = New-EntraShieldReport -Findings $allFindings -Metrics ([pscustomobject]$metrics) -OutputPath $OutputPath -TenantName $TenantName -PreparedBy $PreparedBy -AssessmentMode $assessmentMode -Sanitize:$Sanitize
+
+    if ($GenerateRemediationPlan) {
+        $remediation = New-EntraShieldRemediationPlan -Findings $allFindings -OutputPath $OutputPath -TenantName $TenantName -PreparedBy $PreparedBy -AssessmentMode $assessmentMode -Sanitize:$Sanitize
+        $report | Add-Member -MemberType NoteProperty -Name RemediationMarkdown -Value $remediation.Markdown -Force
+        $report | Add-Member -MemberType NoteProperty -Name RemediationJson -Value $remediation.Json -Force
+    }
 
     if ($OpenReport -and $report.Html -and (Test-Path $report.Html)) {
         try {
