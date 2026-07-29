@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.4.0 - Quality, testing, and reporting improvements
+
+### Added
+- Category-based scoring model via `New-EntraShieldScore`
+- Environment validation command via `Test-EntraShieldEnvironment`
+- Local test helper script: `tools/Test-EntraShieldLocal.ps1`
+- Pester test scaffolding in `tests/EntraShield.Tests.ps1`
+- GitHub Actions workflow that runs parser checks and Pester tests
+- Improved HTML report with category scores, progress bars, evidence column, and top recommendations
+- Improved Markdown report with category score table and top recommendations
+- `docs/testing.md`
+- `docs/scoring-model.md`
+- `docs/release-process.md`
+- Generated local test report folders added to `.gitignore`
+
+### Changed
+- Scoring changed from flat penalty to weighted category-based model
+- Report JSON now includes category score details
+- README updated with testing, scoring, and documentation links
+- Module version updated to 0.4.0
+
+### Notes
+- This release focuses on testability and professional report output before moving toward v1.0.
+- Real tenant reports should still be sanitized before sharing publicly.
+
 ## 0.3.0 - Exchange Online live collector preview
 
 ### Added
